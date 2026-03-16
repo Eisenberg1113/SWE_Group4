@@ -1,96 +1,76 @@
-# SWE_Group4
-Software Engineering Group Project
+# 📱 Project Gachi: Community Platform for Students
 
+## 1. Project Definition
 
-# 📱 Gachi (가치): 대학생 전용 커뮤니티 플랫폼
-
-
-## 📝 프로젝트 개요
-
-* **서비스 명칭**: Gachi (가치)
-* **슬로건**: "우리 동네, 우리 학교의 가치를 잇다"
-* **핵심 목표**:
-* **Modern Tech**: Java 기반의 구형 설계를 탈피하여 Kotlin과 Python의 생산성 극대화.
-* **RESTful Standard**: 표준 HTTP Method와 상태 코드를 활용한 정석적인 API 설계.
-* **User Experience**: 비동기 통신을 통한 끊김 없는 커뮤니티 경험 제공.
-
-
+**Gachi**는 대학 생활의 흩어진 정보를 한데 모으고, 학생 간의 신뢰 기반 소통을 지원하는 **RESTful API 기반 모바일 커뮤니티 플랫폼**입니다. 기존의 복잡한 커뮤니티 구조를 탈피하여, 자원(Resource) 중심의 깔끔한 설계와 현대적인 기술 스택(Kotlin, FastAPI)을 통해 구현됩니다.
 
 ---
 
-## 🛠 Tech Stack
+## 2. Vision Statement
 
-| 분류 | 기술 스택 | 상세 내용 |
+> **"연결의 가치를 더하다, Gachi"**
+> 파편화된 대학 커뮤니티 환경에서 기술적 표준(REST)을 통해 데이터의 흐름을 투명하게 관리하고, 사용자에게는 '함께하는 가치'를 전달하는 가장 안정적이고 직관적인 소통 창구를 제공한다.
+
+---
+
+## 3. Project Goals & Scope
+
+### **Project Goals**
+
+* **Engineering**: RESTful API 설계 원칙을 준수하여 프론트엔드와 백엔드 간의 느슨한 결합(Loose Coupling) 실현.
+* **Quality**: Kotlin의 Null-safety 기능을 활용하여 런타임 오류가 최소화된 안정적인 앱 환경 구축.
+* **Documentation**: Swagger를 통한 API 명세 자동화로 협업 효율성 200% 달성.
+
+### **Project Scope**
+
+* **Backend**: Python FastAPI를 이용한 CRUD 로직 및 JWT 기반 인증 시스템 구축.
+* **Mobile App**: Android Kotlin 기반의 네이티브 UI 및 Retrofit2를 이용한 실시간 데이터 연동.
+* **Core Features**: 회원가입/로그인, 게시글 작성/수정/삭제, 댓글 시스템, 해시태그 기반 검색.
+
+---
+
+## 4. Stakeholders & Users
+
+| 구분 | 대상 | 역할 및 기대효과 |
 | --- | --- | --- |
-| **Frontend** | **Android (Kotlin)** | 신규 네이티브 앱 개발 |
-| **Backend** | **Python (FastAPI)** | 비동기 기반 고성능 REST API 서버 |
-| **Database** | **SQLite** | 관계형 데이터베이스 (RDBMS) |
-| **Network** | **Retrofit2** | Type-safe한 HTTP 클라이언트 라이브러리 |
-| **Serialization** | **Pydantic / Gson** | JSON 데이터 직렬화 및 검증 |
+| **Stakeholders** | **프로젝트 팀원** | 최신 스택(Kotlin, FastAPI) 숙련도 향상 및 SDLC 경험 |
+|  | **담당 교수님** | 소프트웨어공학 원칙(REST, 설계 패턴) 준수 여부 평가 |
+| **Target Users** | **대학생 (Main)** | 전공 정보 공유, 중고 물품 거래, 일상 소통 수행 |
+|  | **커뮤니티 관리자** | 부적절한 게시물 모니터링 및 사용자 관리 기능 활용 |
 
 ---
 
-## 🏗 시스템 아키텍처 (System Architecture)
+## 5. Milestone (6주 집중 프로세스)
 
-Gachi 플랫폼은 클라이언트(Kotlin)와 서버(FastAPI)가 분리된 구조로, JSON 포맷을 통해 데이터를 교환합니다.
+1. **Week 1: Requirements & Design**
+* 요구사항 정의서 작성 및 ERD 설계
+* REST API 엔드포인트 초안 확정
 
----
 
-## 🗺 REST API 설계 (Gachi Resource Design)
+2. **Week 2-3: Core Development (Sprint 1)**
+* FastAPI 기본 서버 및 DB 연동
+* Kotlin 앱 기본 UI 프레임워크 구축
 
-리소스 중심의 URI 설계를 통해 직관적이고 유지보수가 쉬운 API를 제공합니다.
 
-| 도메인 | Method | 엔드포인트 | 설명 |
-| --- | --- | --- | --- |
-| **게시글** | `GET` | `/posts` | 전체 게시글 목록 조회 |
-|  | `POST` | `/posts` | 새로운 게시글 작성 |
-|  | `GET` | `/posts/{id}` | 특정 게시글 상세 보기 |
-|  | `DELETE` | `/posts/{id}` | 본인 게시글 삭제 |
-| **댓글** | `POST` | `/posts/{id}/comments` | 특정 게시글에 댓글 작성 |
-| **사용자** | `POST` | `/auth/register` | 신규 회원가입 |
-|  | `POST` | `/auth/login` | 로그인 및 액세스 토큰 발급 |
+3. **Week 4: Feature Integration (Sprint 2)**
+* API-App 데이터 연동 (Retrofit2)
+* 로그인 및 게시판 CRUD 기능 완성
 
----
 
-## 🛡 소프트웨어공학적 설계 포인트
+4. **Week 5: QA & Testing**
+* Postman을 이용한 API 단위 테스트
+* 앱 UI/UX 디버깅 및 예외 처리
 
-1. **Strict RESTful API**: 동사형 URL(`getPost`)을 배제하고 명사형 자원(`posts`)과 HTTP Method(`GET`, `POST`)를 조합하여 설계했습니다.
-2. **Schema Validation**: Python의 `Pydantic`과 Kotlin의 `Data Class`를 매핑하여 클라이언트-서버 간 데이터 규격을 엄격히 관리합니다.
-3. **Scalable DB Schema**: 유저와 게시글, 댓글 간의 관계를 정규화하여 데이터 무결성을 보장합니다.
 
----
+5. **Week 6: Final Review & Deploy**
+* GitHub 최종 정리 및 프로젝트 발표 자료 준비
 
-## 👥 팀원 역할
 
-* A (Android/Kotlin)**: Gachi 앱 UI 개발 및 Retrofit 기반 API 연동
-* B (Backend/Python)**: FastAPI 서버 아키텍처 설계 및 DB 스키마 구현
-* C (Project Manager)**: API 명세서 작성(Swagger) 및 소프트웨어 요구사항 정의서 관리
 
 ---
 
-🌟 Project Vision & Goals
-Project Vision
-"단순한 소통을 넘어, 파편화된 대학 생활의 정보를 하나로 잇는 가치 있는 연결"
+## 6. GitHub Address
 
-Gachi는 대학생들이 겪는 정보의 불균형을 해소하고, 신뢰할 수 있는 기술 스택을 통해 누구나 쉽고 안전하게 참여할 수 있는 커뮤니티 생태계를 지향합니다.
+* **Repository**: `https://github.com/[Your-Organization-or-ID]/Gachi-Project`
+* **Branch Strategy**: `main` (배포), `develop` (개발), `feature/api` (기능별)
 
-Project Goals
-기술적 도전 (Technical Excellence)
-
-RESTful API의 정석 구현: 리소스 중심의 설계와 적절한 HTTP 상태 코드 활용으로 표준화된 백엔드 구축.
-
-Modern Android: Kotlin의 최신 기능을 활용하여 안정적이고 반응성 높은 UI/UX 제공.
-
-Loose Coupling: 프론트엔드와 백엔드의 완전한 분리를 통해 독립적인 개발 및 배포 환경 체득.
-
-사용자 경험 (User Experience)
-
-데이터 기반 소통: 게시글, 댓글, 좋아요 등 핵심 커뮤니티 기능을 통해 사용자 간 상호작용 극대화.
-
-직관적인 인터페이스: 복잡한 기능보다는 사용자에게 꼭 필요한 핵심 기능 중심의 미니멀리즘 UI 구현.
-
-공학적 프로세스 (Engineering Process)
-
-협업의 가치: Git Flow와 Issue 기반의 협업을 통해 체계적인 소프트웨어 개발 생명주기(SDLC) 경험.
-
-문서화의 자동화: Swagger를 이용한 API 명세 자동화로 팀원 간 커뮤니케이션 비용 최소화.
