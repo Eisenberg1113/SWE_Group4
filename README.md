@@ -65,3 +65,32 @@ Gachi 플랫폼은 클라이언트(Kotlin)와 서버(FastAPI)가 분리된 구�
 * A (Android/Kotlin)**: Gachi 앱 UI 개발 및 Retrofit 기반 API 연동
 * B (Backend/Python)**: FastAPI 서버 아키텍처 설계 및 DB 스키마 구현
 * C (Project Manager)**: API 명세서 작성(Swagger) 및 소프트웨어 요구사항 정의서 관리
+
+---
+
+🌟 Project Vision & Goals
+Project Vision
+"단순한 소통을 넘어, 파편화된 대학 생활의 정보를 하나로 잇는 가치 있는 연결"
+
+Gachi는 대학생들이 겪는 정보의 불균형을 해소하고, 신뢰할 수 있는 기술 스택을 통해 누구나 쉽고 안전하게 참여할 수 있는 커뮤니티 생태계를 지향합니다.
+
+Project Goals
+기술적 도전 (Technical Excellence)
+
+RESTful API의 정석 구현: 리소스 중심의 설계와 적절한 HTTP 상태 코드 활용으로 표준화된 백엔드 구축.
+
+Modern Android: Kotlin의 최신 기능을 활용하여 안정적이고 반응성 높은 UI/UX 제공.
+
+Loose Coupling: 프론트엔드와 백엔드의 완전한 분리를 통해 독립적인 개발 및 배포 환경 체득.
+
+사용자 경험 (User Experience)
+
+데이터 기반 소통: 게시글, 댓글, 좋아요 등 핵심 커뮤니티 기능을 통해 사용자 간 상호작용 극대화.
+
+직관적인 인터페이스: 복잡한 기능보다는 사용자에게 꼭 필요한 핵심 기능 중심의 미니멀리즘 UI 구현.
+
+공학적 프로세스 (Engineering Process)
+
+협업의 가치: Git Flow와 Issue 기반의 협업을 통해 체계적인 소프트웨어 개발 생명주기(SDLC) 경험.
+
+문서화의 자동화: Swagger를 이용한 API 명세 자동화로 팀원 간 커뮤니케이션 비용 최소화.
