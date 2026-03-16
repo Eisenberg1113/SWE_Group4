@@ -71,6 +71,6 @@
 
 ## 6. GitHub Address
 
-* **Repository**: `https://github.com/[Your-Organization-or-ID]/Gachi-Project`
+* **Repository**: https://github.com/Eisenberg1113/SWE_Group4
 * **Branch Strategy**: `main` (배포), `develop` (개발), `feature/api` (기능별)
 
