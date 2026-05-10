@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+<style>
+    /* 카테고리 라디오 버튼 커스텀 */
+    .category-card input[type="radio"]:checked + .category-label {
+        background-color: rgba(79, 70, 229, 0.2);
+        border-color: #4F46E5;
+        color: #818CF8;
+    }
+    .category-label {
+        border: 1px solid rgba(255,255,255,0.07);
+        background-color: #111118;
+        transition: all 0.15s ease;
+        cursor: pointer;
+    }
+    .category-label:hover {
+        border-color: rgba(79, 70, 229, 0.4);
+        color: #c7d2fe;
+    }
+    /* 지도 영역 */
+    #map {
+        width: 100%;
+        height: 280px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.07);
+        background-color: #1a1a24;
+        overflow: hidden;
+    }
+    /* Flatpickr 스타일 오버라이드 */
+    .flatpickr-input {
+        background-color: #111118 !important;
+        border: 1px solid rgba(255,255,255,0.07) !important;
+        color: white !important;
+        border-radius: 8px !important;
+        padding: 12px 14px !important;
+        width: 100% !important;
+        font-size: 14px !important;
+        outline: none !important;
+    }
+    .flatpickr-input:focus {
+        border-color: #4F46E5 !important;
+        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2) !important;
+    }
+    /* 입력 필드 공통 */
+    .field-input {
+        background-color: #111118;
+        border: 1px solid rgba(255,255,255,0.07);
+        color: white;
+        border-radius: 8px;
+        padding: 12px 14px;
+        width: 100%;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    }
+    .field-input:focus {
+        border-color: #4F46E5;
+        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+    }
+    .field-input::placeholder {
+        color: #4b5563;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-10">
+
+    <!-- 헤더 -->
+    <div class="mb-8">
+        <a href="{% url 'meeting_list' %}" class="text-sm text-gray-500 hover:text-gray-300 transition flex items-center gap-1 mb-4">
+            ← 목록으로
+        </a>
+        <h1 class="text-2xl font-bold text-white">새 모임 만들기</h1>
+        <p class="text-sm text-gray-500 mt-1">카테고리를 선택하고 장소와 일정을 정해보세요</p>
+    </div>
+
+    <div class="surface rounded-2xl p-8">
+        <form method="post" id="meeting-form">
+            {% csrf_token %}
+
+            <!-- 1. 카테고리 선택 -->
+            <div class="mb-8">
+                <label class="block text-sm font-semibold text-gray-300 mb-3">
+                    카테고리 <span class="text-indigo-400">*</span>
+                </label>
+                <div class="grid grid-cols-4 gap-3">
+                    <label class="category-card">
+                        <input type="radio" name="category" value="운동" class="sr-only" required>
+                        <div class="category-label rounded-xl p-4 text-center">
+                            <div class="text-2xl mb-1">💪</div>
+                            <div class="text-sm font-medium text-gray-300">운동</div>
+                        </div>
+                    </label>
+                    <label class="category-card">
+                        <input type="radio" name="category" value="게임" class="sr-only">
+                        <div class="category-label rounded-xl p-4 text-center">
+                            <div class="text-2xl mb-1">🎮</div>
+                            <div class="text-sm font-medium text-gray-300">게임</div>
+                        </div>
+                    </label>
+                    <label class="category-card">
+                        <input type="radio" name="category" value="스터디" class="sr-only">
+                        <div class="category-label rounded-xl p-4 text-center">
+                            <div class="text-2xl mb-1">📚</div>
+                            <div class="text-sm font-medium text-gray-300">스터디</div>
+                        </div>
+                    </label>
+                    <label class="category-card">
+                        <input type="radio" name="category" value="식사" class="sr-only">
+                        <div class="category-label rounded-xl p-4 text-center">
+                            <div class="text-2xl mb-1">🍽️</div>
+                            <div class="text-sm font-medium text-gray-300">식사</div>
+                        </div>
+                    </label>
+                </div>
+                <p id="category-error" class="text-xs text-red-400 mt-2 hidden">카테고리를 선택해주세요.</p>
+            </div>
+
+            <!-- 2. 모임 제목 -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold text-gray-300 mb-3">
+                    모임 제목 <span class="text-indigo-400">*</span>
+                </label>
+                <input type="text" name="title" class="field-input"
+                       placeholder="예: 오늘 저녁 같이 드실 분!" maxlength="100" required>
+            </div>
+
+            <!-- 3. 상세 내용 -->
+            <div class="mb-8">
+                <label class="block text-sm font-semibold text-gray-300 mb-3">
+                    상세 내용 <span class="text-gray-600 font-normal">(선택)</span>
+                </label>
+                <textarea name="description" rows="3" class="field-input resize-none"
+                          placeholder="모임에 대한 자세한 설명을 적어주세요."></textarea>
+            </div>
+
+            <!-- 구분선 -->
+            <div class="border-t border-white/5 mb-8"></div>
+
+            <!-- 4. 장소 선택 (카카오맵) -->
+            <div class="mb-8">
+                <label class="block text-sm font-semibold text-gray-300 mb-3">
+                    모임 장소 <span class="text-indigo-400">*</span>
+                </label>
+                <div id="map"></div>
+                <input type="hidden" id="lat" name="lat">
+                <input type="hidden" id="lng" name="lng">
+                <input type="hidden" id="place_name" name="place_name">
+                <div id="map-status" class="flex items-center gap-2 mt-3 text-sm text-gray-500">
+                    <span>📍</span>
+                    <span id="map-status-text">지도를 클릭해서 장소를 선택하세요.</span>
+                </div>
+                <p id="location-error" class="text-xs text-red-400 mt-1 hidden">장소를 선택해주세요.</p>
+            </div>
+
+            <!-- 5. 일정 선택 (Flatpickr) -->
+            <div class="mb-10">
+                <label class="block text-sm font-semibold text-gray-300 mb-3">
+                    모임 일정 <span class="text-indigo-400">*</span>
+                </label>
+                <input id="schedule-picker" name="schedule"
+                       placeholder="날짜와 시간을 선택하세요..." required>
+                <p id="schedule-error" class="text-xs text-red-400 mt-2 hidden">일정을 선택해주세요.</p>
+            </div>
+
+            <!-- 제출 버튼 -->
+            <button type="submit" id="submit-btn"
+                    class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-white font-bold text-base transition btn-glow">
+                모임 개설하기
+            </button>
+
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
+<script type="text/javascript"
+    src="https://dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_map_api_key }}&libraries=services">
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    /* ── 1. Flatpickr 날짜+시간 선택 ── */
+    flatpickr("#schedule-picker", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        minDate: "today",
+        locale: "ko",
+        time_24hr: true,
+        disableMobile: true,
+    });
+
+    /* ── 2. 카카오맵 ── */
+    var mapEl = document.getElementById('map');
+    var statusText = document.getElementById('map-status-text');
+    var statusBox = document.getElementById('map-status');
+
+    var kakaoKey = "{{ kakao_map_api_key }}";
+
+    if (!kakaoKey || kakaoKey === "None") {
+        mapEl.innerHTML = '<div class="w-full h-full flex flex-col items-center justify-center text-gray-500 gap-2">' +
+            '<span class="text-3xl">🗺️</span>' +
+            '<p class="text-sm">카카오맵 API 키가 설정되지 않았습니다.</p>' +
+            '<p class="text-xs text-gray-600">.env 파일에 KAKAO_MAP_API_KEY를 추가해주세요.</p>' +
+            '</div>';
+    } else if (typeof kakao === 'undefined' || !kakao.maps) {
+        mapEl.innerHTML = '<div class="w-full h-full flex flex-col items-center justify-center text-red-400 gap-2">' +
+            '<span class="text-3xl">⚠️</span>' +
+            '<p class="text-sm">카카오맵을 불러오지 못했습니다.</p>' +
+            '</div>';
+    } else {
+        try {
+            var mapOption = {
+                center: new kakao.maps.LatLng(37.566826, 126.9786567), // 서울 기본
+                level: 5
+            };
+            var map = new kakao.maps.Map(mapEl, mapOption);
+            var geocoder = new kakao.maps.services.Geocoder();
+            var marker = new kakao.maps.Marker({ map: map, position: map.getCenter() });
+
+            kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
+                var latlng = mouseEvent.latLng;
+                marker.setPosition(latlng);
+
+                document.getElementById('lat').value = latlng.getLat();
+                document.getElementById('lng').value = latlng.getLng();
+
+                geocoder.coord2Address(latlng.getLng(), latlng.getLat(), function (result, status) {
+                    var addr = "";
+                    if (status === kakao.maps.services.Status.OK) {
+                        addr = result[0].road_address
+                            ? result[0].road_address.address_name
+                            : result[0].address.address_name;
+                    } else {
+                        addr = "알 수 없는 위치";
+                    }
+                    document.getElementById('place_name').value = addr;
+                    statusText.textContent = "선택된 장소: " + addr;
+                    statusBox.classList.remove('text-gray-500');
+                    statusBox.classList.add('text-indigo-400');
+                    document.getElementById('location-error').classList.add('hidden');
+                });
+            });
+        } catch (e) {
+            mapEl.innerHTML = '<div class="w-full h-full flex items-center justify-center text-red-400 text-sm">지도 초기화 중 오류가 발생했습니다.</div>';
+            console.error(e);
+        }
+    }
+
+    /* ── 3. 카테고리 선택 시 라벨 스타일 업데이트 ── */
+    document.querySelectorAll('.category-card input[type="radio"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            document.getElementById('category-error').classList.add('hidden');
+        });
+    });
+
+    /* ── 4. 폼 제출 유효성 검사 ── */
+    document.getElementById('meeting-form').addEventListener('submit', function (e) {
+        var valid = true;
+
+        // 카테고리 체크
+        var categorySelected = document.querySelector('input[name="category"]:checked');
+        if (!categorySelected) {
+            document.getElementById('category-error').classList.remove('hidden');
+            valid = false;
+        }
+
+        // 장소 체크
+        if (!document.getElementById('lat').value) {
+            document.getElementById('location-error').classList.remove('hidden');
+            valid = false;
+        }
+
+        // 일정 체크
+        if (!document.getElementById('schedule-picker').value) {
+            document.getElementById('schedule-error').classList.remove('hidden');
+            valid = false;
+        }
+
+        if (!valid) e.preventDefault();
+    });
+});
+</script>
+{% endblock %}

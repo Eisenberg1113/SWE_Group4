@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-10">
+
+    <!-- 헤더 -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-white">모임 목록</h1>
+            <p class="text-sm text-gray-500 mt-1">캠퍼스 근처 모임을 찾아보세요</p>
+        </div>
+        <a href="{% url 'meeting_create' %}"
+           class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-white text-sm font-bold transition btn-glow">
+            + 모임 만들기
+        </a>
+    </div>
+
+    <!-- 카테고리 필터 탭 -->
+    <div class="flex gap-2 mb-8 overflow-x-auto pb-1">
+    <a href="{% url 'meeting_list' %}"
+       class="flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium transition
+              {% if not current_category %}bg-indigo-600 text-white shadow-lg shadow-indigo-500/20{% else %}surface text-gray-400 hover:text-white hover:border-white/20{% endif %}">
+        전체
+    </a>
+
+    {% for value, label in meetings.0.CATEGORY_CHOICES %}
+        <a href="{% url 'meeting_list' %}?category={{ value }}"
+           class="flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium transition
+                  {% if current_category == value %}bg-indigo-600 text-white shadow-lg shadow-indigo-500/20{% else %}surface text-gray-400 hover:text-white hover:border-white/20{% endif %}">
+            {% if value == "운동" %}💪
+            {% elif value == "게임" %}🎮
+            {% elif value == "스터디" %}📚
+            {% elif value == "식사" %}🍽️
+            {% endif %}
+            {{ label }}
+        </a>
+    {% endfor %}
+</div>
+
+    <!-- 모임 카드 목록 -->
+    <div class="space-y-4">
+        {% for meeting in meetings %}
+        <div class="surface rounded-2xl p-6 hover:border-indigo-500/40 transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/5">
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex-1 min-w-0">
+
+                    <!-- 카테고리 뱃지 -->
+                    <div class="mb-2">
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium
+                            {% if meeting.category == '운동' %}bg-green-500/15 text-green-400
+                            {% elif meeting.category == '게임' %}bg-purple-500/15 text-purple-400
+                            {% elif meeting.category == '스터디' %}bg-blue-500/15 text-blue-400
+                            {% elif meeting.category == '식사' %}bg-orange-500/15 text-orange-400
+                            {% else %}bg-indigo-500/15 text-indigo-400{% endif %}">
+                            {% if meeting.category == "운동" %}💪
+                            {% elif meeting.category == "게임" %}🎮
+                            {% elif meeting.category == "스터디" %}📚
+                            {% elif meeting.category == "식사" %}🍽️
+                            {% endif %}
+                            {{ meeting.category }}
+                        </span>
+                    </div>
+
+                    <!-- 제목 -->
+                    <h2 class="text-base font-bold text-white mb-1 truncate">{{ meeting.title }}</h2>
+
+                    <!-- 내용 -->
+                    <p class="text-sm text-gray-400 mb-4 line-clamp-2">
+                        {{ meeting.description|default:"설명이 없습니다." }}
+                    </p>
+
+                    <!-- 메타 정보 -->
+                    <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+                        <span class="flex items-center gap-1">
+                            <span>👤</span>
+                            <span>{{ meeting.host.nickname }}</span>
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <span>📍</span>
+                            <span>{{ meeting.location.name|default:"장소 미정" }}</span>
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <span>📅</span>
+                            <span>
+                                {% if meeting.schedule %}
+                                    {{ meeting.schedule|date:"m월 d일 H:i" }}
+                                {% else %}
+                                    일정 미정
+                                {% endif %}
+                            </span>
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <span>👥</span>
+                            <span>{{ meeting.members.count }}/{{ meeting.max_members }}명</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 참여하기 버튼 (임태규가 로직 연결 예정) -->
+                <div class="flex-shrink-0">
+                    {% if meeting.members.count < meeting.max_members %}
+                        <a href="{% url 'meeting_join' meeting.id %}"
+                           class="block px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white text-sm font-medium transition btn-glow whitespace-nowrap">
+                            참여하기
+                        </a>
+                    {% else %}
+                        <span class="block px-4 py-2 bg-gray-700 rounded-lg text-gray-400 text-sm font-medium cursor-not-allowed whitespace-nowrap">
+                            마감
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <!-- 모임 없을 때 -->
+        <div class="text-center py-24">
+            <p class="text-5xl mb-4">🍃</p>
+            <p class="text-gray-400 font-medium">
+                {% if current_category %}
+                    {{ current_category }} 카테고리 모임이 아직 없어요.
+                {% else %}
+                    아직 모임이 없어요.
+                {% endif %}
+            </p>
+            <p class="text-gray-600 text-sm mt-1">첫 모임을 직접 만들어보세요!</p>
+            <a href="{% url 'meeting_create' %}"
+               class="inline-block mt-6 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-white text-sm font-bold transition btn-glow">
+                + 모임 만들기
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
