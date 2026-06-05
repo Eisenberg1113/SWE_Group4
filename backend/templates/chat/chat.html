@@ -56,24 +56,47 @@ document.addEventListener('DOMContentLoaded', function() {
     const messageInput = document.getElementById('message-input');
     
     const meetingId = {{ meeting.id }};
-    const apiEndpoint = `/api/meetings/${meetingId}/messages/`;
-    let lastMessageId = 0;
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${wsProtocol}//${window.location.host}/ws/chat/${meetingId}/`;
+    let chatSocket = null;
 
     // 초기 메시지 렌더링
     const initialMessages = {{ initial_messages_json|safe }};
     initialMessages.forEach(addMessageToDOM);
     scrollToBottom();
 
-    // Long Polling 시작
-    pollForNewMessages();
+    // 웹소켓 연결 함수
+    function connectWebSocket() {
+        chatSocket = new WebSocket(wsUrl);
+
+        chatSocket.onmessage = function(e) {
+            const message = JSON.parse(e.data);
+            addMessageToDOM(message);
+            scrollToBottom();
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly. Reconnecting in 3s...');
+            setTimeout(connectWebSocket, 3000);
+        };
+
+        chatSocket.onerror = function(err) {
+            console.error('WebSocket encountered error: ', err.message, 'Closing socket...');
+            chatSocket.close();
+        };
+    }
+
+    connectWebSocket();
 
     // 새 메시지 전송 처리
     chatForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const content = messageInput.value.trim();
-        if (content) {
-            sendMessage(content);
+        if (content && chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+            chatSocket.send(JSON.stringify({ 'content': content }));
             messageInput.value = '';
+        } else if (!chatSocket || chatSocket.readyState !== WebSocket.OPEN) {
+            console.warn('Cannot send message. WebSocket is not open.');
         }
     });
 
@@ -100,66 +123,10 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         messageWrapper.appendChild(messageElement);
         messageList.appendChild(messageWrapper);
-
-        // 마지막 메시지 ID 업데이트
-        if (message.id > lastMessageId) {
-            lastMessageId = message.id;
-        }
     }
 
     function scrollToBottom() {
         messageList.scrollTop = messageList.scrollHeight;
-    }
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    const csrftoken = getCookie('csrftoken');
-
-    async function sendMessage(content) {
-        try {
-            await fetch(apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken,
-                },
-                body: JSON.stringify({ content: content })
-            });
-        } catch (error) {
-            console.error('Error sending message:', error);
-        }
-    }
-
-    async function pollForNewMessages() {
-        try {
-            const response = await fetch(`${apiEndpoint}?last_id=${lastMessageId}`);
-            if (response.status === 200) {
-                const newMessages = await response.json();
-                if (newMessages.length > 0) {
-                    newMessages.forEach(addMessageToDOM);
-                    scrollToBottom();
-                }
-            }
-        } catch (error) {
-            console.error('Polling error:', error);
-            // 에러 발생 시 잠시 후 다시 시도
-            setTimeout(pollForNewMessages, 5000);
-            return;
-        }
-        // 즉시 다음 폴링 시작
-        pollForNewMessages();
     }
 });
 
