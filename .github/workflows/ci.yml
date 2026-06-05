@@ -23,11 +23,11 @@ jobs:
 
       - name: Start Database and Redis services
         run: |
-          docker-compose up -d db redis
+          docker compose up -d db redis
 
       - name: Wait for PostgreSQL to be ready
         run: |
-          until docker-compose exec -T db pg_isready -U meetu_user -d meetu; do
+          until docker compose exec -T db pg_isready -U meetu_user -d meetu; do
             echo "Waiting for PostgreSQL database to be ready..."
             sleep 2
           done
@@ -35,8 +35,8 @@ jobs:
 
       - name: Run Tests
         run: |
-          docker-compose run --rm web python manage.py test
+          docker compose run --rm web python manage.py test
 
       - name: Clean up containers
         run: |
-          docker-compose down
+          docker compose down
